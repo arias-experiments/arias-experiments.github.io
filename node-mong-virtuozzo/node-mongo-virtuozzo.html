@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Create, and deploy a simple NodeJS + Mongo + Reclaim.cloud Application</title>
+</head>
+
+<body>
+<h1>Pre-Requirements</h1>
+<p>For this tutorial I will use the following software/Services:</p>
+<ul>
+	<li>Command Line</li>
+	<li>NodeJS, MongoDB local copy for testing</li>
+	<li>Visual Studio Code</li>
+	<li>Postman</li>
+	<li>GitHub</li>
+</ul>
+<div>
+	<p>In the future it would be great to add the creation of the Docker Environment to have a local copy for testsing on the computer, and then deploying that, but I will keep it simple for now</p>
+</div>
+<h1>General Steps</h1>
+	<ol>
+		<li>Create an Account on <a href="https://reclaim.cloud/">Reclaim.cloud</a>. After creating it, login.</li>
+		<li>Create a New Environment</li>
+		<li>Create and setup a GitHub repository for your code, I will name it books-nodejs-mongo</li>
+		<li>Do the initial setup of the NodeJS Application</li>
+		<li>Create the Simple Application</li>
+		
+	</ol>
+	
+	
+<h2 id="new-environ">Creating a New Environement</h2>
+	<p>Once you have logged in you will have an empty environments page:</p>
+<img src="images/reclaim.cloud.page1.png" width="640"  alt=""/>
+<ol>
+	<li>Click on "Create New Environment"</li>
+	<li>Select the Node.js Tab</li>
+	<li>Make sure the JS is selected to the left</li>
+	<li>Click on NoSQL and Select MongoDB</li>
+	<li>Since this is just a toy application, use minimum resources, when you decide to get serious you will need to set the application servers scalability appropriately. In the example see that I set it up to have 1 reserved cloudet and 4 cloudets for scaling limit. I set the Disk Limit to 5 GB.&nbsp;</li>
+	<li>Set the name of your Environment, I named it <code>my-books</code></li>
+	<img src="images/first-environment.png" width="640"  alt=""/>
+	<li>Click on Create, it will take a while to create the platform.</li>
+	<img src="images/my-books-creating.png" width="640"  alt=""/>
+	<li>Once the environment is created it will appear like:</li>
+	<img src="images/environment-created.png" width="640"  alt=""/>
+</ol>
+
+	<div>
+	<p>Another tutorial could include the balancing part, once again, I'm keeping this one short</p>
+</div>
+	
+	<h2 id="repo">Creating and Setting up a GitHub Repository</h2>
+	
+	<ol>
+		<li>Create the repository</li>
+		<li>Clone the repository to your computer, note that the repo is basically empty</li>
+		<img src="images/cloning-locally.png" width="640"  alt=""/>
+		<img src="images/entered-cloned-repo.png" width="640"  alt=""/>
+		
+	</ol>
+	
+	<h2>NodeJS Initial Setup</h2>
+	<ol>
+		<li>Setup the new NodeJS application on the repository recently cloned</li>
+		<li>Create the <code>package.json</code> file</li>
+		<img src="images/010-npm-init.png" width="640"  alt=""/>
+		<li>Check the <code>package.json</code> file, not that I am using Visual Studio Code as editor (You may want to use vim if you wish!</li>
+		<img src="images/011-package-json-vsc.png" width="640"  alt=""/>
+		<li>Install the dependencies we will need for this simple example, in our case:</li>
+		<ul>
+			<li>Express: <code>npm install -s express</code></li>
+			<li>Mongoose: <code>npm install -s mongoose</code></li>
+			<li>Body Parser: <code>npm install -s body-parser</code></li>
+			<img src="images/012-install-dependencies.png" width="640"  alt=""/>
+		</ul>
+		<li>Some last modification to the <code>package.json</code> file, for the program to run on Reclaim Cloud (or using <code>npm start</code> it needs to add a <code>start</code> value to the <code>scripts</code> part.</li>
+		<img src="images/013-package-json-ready.png" width="640"  alt=""/>
+	</ol>
+	<h2>Create the Simple Application</h2>
+	<p>Our application is going to be a REST API application that will provide a GET and a POST request to access a database of books. I did mention that this was going to be simple, right?</p>
+	<ol>
+		<li>Create the Model</li>
+		<ol>
+			<li>Create a directory inside your project called <code>models</code></li>
+			<li>Inside that directoy create a file called <code>book.js</code>. This file will containe the definition of the structure that will be used for our books</li>
+			<div>
+				<pre>
+				<code>
+					const mongoose = require('mongoose');
+					const Schema = mongoose.Schema;
+					const BookSchema = new Schema({
+						name: String,
+						price: Number,
+						quantity: Number
+					});
+
+					module.exports = mongoose.model('Book', BookSchema);
+				</code>
+				</pre>
+			</div>
+		</ol>
+		<li>Create the Route</li>
+		<ol>
+			<li>Create a directory inside your project called <code>routes</code></li>
+			<li>Inside that directory create a file called <code>books.js</code>. This file will contain the route handling for your books.</li>
+			<div>
+				<pre>
+				<code>
+					const express = require('express');
+					const router = express.Router();
+					BookSchema = require('../models/books');
+
+					function HandleError(response, reason, message, code){
+						console.log('ERROR: ', reason);
+						response.status(code || 500).json({"error": message});
+					}
+
+					router.get('/', (request, response) => {
+						BookSchema.find().exec( (error, books) => {
+							if (error){
+								HandleError(response, "error retrieving data", "get failed", 500);
+							}else{
+								response.send(books);
+							}
+						});
+					});
+
+					router.post('/', (request, response) => {
+						const bookJSON = request.body;
+						if (!bookJSON.name || !bookJSON.price){
+							HandleError(response, "missing information", "post data missing", 500);
+						}else{
+							book = new BookSchema({
+								name: bookJSON.name,
+								price: bookJSON.price,
+								quantity: bookJSON.quantity || 0
+							});
+							book.save( (error) => {
+								if (error){
+									response.send({"error": error});
+								}else{
+									response.send({"id": book.id});
+								}
+							});
+						}
+					});
+					module.exports = router;
+				</code>
+				</pre>
+			</div>
+		</ol>
+		<li>Create a helper file to connect to database, name it <code>database.js</code>, place the file in the same directory as <code>index.js</code>. Note that at the moment our application is going to connect to a local MongoDB database, this will change once we are sure everything is in working order</li>
+		<pre>
+		<code>
+			const mongoose = require('mongoose');
+			const url = 'mongodb://localhost/books';
+
+			mongoose.connect(url, {useUnifiedTopology: true, useNewUrlParser: true});
+			const db = mongoose.connection;
+
+			db.once('open', () => {
+				console.log('Connected to Dabase');
+			});
+
+			db.on('error', (error) => {
+				console.error('Connection error: ', error);
+			});
+
+			module.exports = db;		
+		</code>
+		</pre>
+		<li>Put all together on <code>index.js</code></li>
+		<pre>
+		<code>
+			const express = require('express');
+			const bodyParser = require('body-parser');
+
+			const app = express();
+
+			const db = require('./database');
+
+			const booksRouter = require('./routes/books');
+
+			app.use(bodyParser.urlencoded({extended: true}));
+			app.use('/api/books', booksRouter);
+
+			app.listen(8001, () => {
+				console.log('Listening on 8001');
+			});		
+		</code>
+		</pre>
+		<li>Run the application. Go to the terminal, and on the project directory type: <code>node index.js</code></li>
+		<img src="images/014-run-the-app-locally.png" width="640"  alt=""/>
+		<li>Check that the application is running opening <code>localhost:8001/api/books</code> on your browser. Note that we are using <code>/api/books</code> because that is the suffix we specify on <code>index.js</code></li>
+		<img src="images/015-browser-running.png" width="640"  alt=""/>
+		<li>Using Postman, you can now test the requests
+			<ul>
+				<li>GET, it shows an empty array</li>
+				<img src="images/016-postman-get.png" width="640"  alt=""/>
+				<li>POST, add a book using the <code>x-www-form-urlencoded</code> parameters</li>
+				<img src="images/017-postman-post.png" width="640"  alt=""/>
+				<li>GET, shows the recently inserted record</li>
+				<img src="images/018-postman-get.png" width="640"  alt=""/>
+			</ul>
+		</li>
+		
+		commit and push
+		
+		
+	</ol>
+	
+</body>
+</html>
