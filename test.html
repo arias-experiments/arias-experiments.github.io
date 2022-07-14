@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Mongoose 101 | Zell Liew</title>
+<meta name="description" content="
+  Mongoose is a library that makes MongoDB easier to use. In this article, you&#39;ll learn how to use Mongoose on a basic level."/>
+<link rel="canonical" href="https://zellwk.com/blog/mongoose/">
+<link rel="stylesheet" href="css/zell.css">
+
+<script>
+  (function(d) {
+    var config = {
+      kitId: 'tsd8lrs',
+      scriptTimeout: 3000,
+      async: true
+    },
+    h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+  })(document);
+</script>
+<!-- Favicons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+<link rel="manifest" href="/favicons/manifest.json">
+<link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#fd256e">
+<link rel="shortcut icon" href="/favicons/favicon.ico">
+<meta name="msapplication-config" content="/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+  
+  <meta property="og:image" content="https://zellwk.com/images/zell/zell-profile-pic.jpg"/>
+  <meta name="twitter:image" content="https://zellwk.com/images/zell/zell-profile-pic.jpg"/>
+  <meta property="og:image:alt" content="Page image for Mongoose 101 | Zell Liew"/>
+  <meta name="twitter:image:alt" content="Page image for Mongoose 101 | Zell Liew"/>
+
+
+
+  <meta name="twitter:creator" content="@zellwk"/>
+
+<link rel="alternate" type="application/rss+xml" title="Feed for articles" href="/feed.xml">
+</head>
+
+  <body class="">
+    <div class="c-site-container">
+        <header>
+  <div class="l-wrap">
+    <nav class="c-main-nav l-wrap__full">
+      <div>
+        <a class="c-main-nav__logo" href="/about">
+          <div class="o-zell"><svg id="zell" viewBox="0 0 90 30">
+  <title> Zell </title>
+  <g>
+    <g class="z">
+      <path class="o-zell__bar" d="M0 0v6.332h24.336L24.384 0z"/>
+      <path class="o-zell__text" d="M24.336 6.332h-8.154L0 23.425v6.332h24.336v-6.38H9.562z"/>
+    </g>
+    <path class="e o-zell__text" d="M45.706 29.757v-5.34H34.657v-3.614h9.194v-4.941h-9.194V12.28h11.05V6.956H27.893v22.801z"/>
+    <path class="l1 o-zell__text" d="M68.124 29.757v-5.9H57.938V6.956h-7.275v22.801z"/>
+    <path class="l2 o-zell__text" d="M89.646 29.757v-5.9H79.461V6.956h-7.276v22.801z"/>
+  </g>
+</svg>
+</div>
+        </a>
+      </div><div class="main-nav jsNavContainer">
+    <a href="https://learnjavascript.today" class="o-navlink">Learn JavaScript</a>
+    <a href="/about" class="o-navlink">About</a>
+    <a href="/blog" class="o-navlink">Articles</a>
+    <a href="/contact" class="o-navlink">Contact</a>
+    <a href="/newsletter" class="o-navlink">Newsletter</a>
+
+    <button
+    class="button c-main-nav__toggle jsOffsiteLauncher">Menu</button>
+  </div>
+    </nav>
+  </div>
+</header>
+
+
+      <main>
+<div class="l-wrap">
+  <article class="o-content post-layout">
+    <h1>Mongoose 101</h1>
+    <span class="post-layout__date">11th Dec 2019</span>
+
+    
+    
+<p>Mongoose is a library that makes MongoDB easier to use. It does two things:</p>
+<ol>
+<li>It gives structure to MongoDB Collections</li>
+<li>It gives you helpful methods to use</li>
+</ol>
+<p>In this article, you’ll learn how to use Mongoose on a basic level.</p>
+<!-- more -->
+<h2 id="prerequisites">Prerequisites</h2>
+<p>I assume you have done the following:</p>
+<ol>
+<li>You have installed MongoDB on your computer</li>
+<li>You know how to set up a local MongoDB connection</li>
+<li>You know how to see the data you have in your database</li>
+<li>You know what are “collections” in MongoDB</li>
+</ol>
+<p>If you don’t know any of these, please read <a href="/blog/local-mongodb">“How to set up a local MongoDB connection”</a> before you continue.</p>
+<p>I also assume you know how to use MongoDB to create a simple CRUD app. If you don’t know how to do this, please read <a href="/blog/crud-express-mongodb">“How to build a CRUD app with Node, Express, and MongoDB”</a> before you continue.</p>
+<h2 id="connecting-to-a-database">Connecting to a database</h2>
+<p>First, you need to download Mongoose.</p>
+<pre><code class="language-bash">npm install mongoose --save
+</code></pre>
+<p>You can connect to a database with the <code>connect</code> method. Let’s say we want to connect to a database called <code>street-fighters</code>. Here’s the code you need:</p>
+<pre><code class="language-js">const mongoose = require('mongoose')
+const url = 'mongodb://127.0.0.1:27017/street-fighters'
+
+mongoose.connect(url, { useNewUrlParser: true })
+</code></pre>
+<p>We want to know whether our connection has succeeded or failed. This helps us with debugging.</p>
+<p>To check whether the connection has succeeded, we can use the <code>open</code> event. To check whether the connection failed, we use the <code>error</code> event.</p>
+<pre><code class="language-js">const db = mongoose.connection
+db.once('open', _ =&gt; {
+  console.log('Database connected:', url)
+})
+
+db.on('error', err =&gt; {
+  console.error('connection error:', err)
+})
+</code></pre>
+<p>Try connecting to the database. You should see a log like this:</p>
+<figure role="figure"><img src="/images/2019/mongoose/connect-database.png" alt="Connected to a database."></figure>
+<h2 id="creating-a-model">Creating a Model</h2>
+<p>In Mongoose, you need to <strong>use models to create, read, update, or delete items</strong> from a MongoDB collection.</p>
+<p>To create a Model, <strong>you need to create a Schema</strong>. A Schema lets you** define the structure of an entry** in the collection. This entry is also called a document.</p>
+<p>Here’s how you create a schema:</p>
+<pre><code class="language-js">const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const schema = new Schema({
+  // ...
+})
+</code></pre>
+<p>You can use <a href="https://mongoosejs.com/docs/guide.html">10 different kinds of values</a> in a Schema. Most of the time, you’ll use these six:</p>
+<ul>
+<li>String</li>
+<li>Number</li>
+<li>Boolean</li>
+<li>Array</li>
+<li>Date</li>
+<li>ObjectId</li>
+</ul>
+<p>Let’s put this into practice.</p>
+<p>Say we want to create characters for our Street Fighter database.</p>
+<p>In Mongoose, it’s a normal practice to <strong>put each model in its own file.</strong> So we will create a <code>Character.js</code> file first. This <code>Character.js</code> file will be placed in the <code>models</code> folder.</p>
+<pre><code class="language-bash">project/
+    |- models/
+        |- Character.js
+</code></pre>
+<p>In <code>Character.js</code>, we create a <code>characterSchema</code>.</p>
+<pre><code class="language-js">const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const characterSchema = new Schema({
+  // ...
+})
+</code></pre>
+<p>Let’s say we want to save two things into the database:</p>
+<ol>
+<li>Name of the character</li>
+<li>Name of their ultimate move</li>
+</ol>
+<p>Both can be represented with Strings.</p>
+<pre><code class="language-js">const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const characterSchema = new Schema({
+  name: String,
+  ultimate: String
+})
+</code></pre>
+<p>Once we’ve created <code>characterSchema</code>, we can use mongoose’s <code>model</code> method to create the model.</p>
+<pre><code class="language-js">module.exports = mongoose.model('Character', characterSchema)
+</code></pre>
+<h2 id="creating-a-character">Creating a character</h2>
+<p>Let’s say you have a file called <code>index.js</code>. This is where we’ll perform Mongoose operations for this tutorial.</p>
+<pre><code class="language-bash">project/
+    |- index.js
+    |- models/
+        |- Character.js
+</code></pre>
+<p>First, you need to load the Character model. You can do this with <code>require</code>.</p>
+<pre><code class="language-js">const Character = require('./models/Character')
+</code></pre>
+<p>Let’s say you want to create a character called Ryu. Ryu has an ultimate move called “Shinku Hadoken”.</p>
+<p>To create Ryu, you use the <code>new</code>, followed by your model. In this case, it’s <code>new Character</code>.</p>
+<pre><code class="language-js">const ryu = new Character ({
+  name: 'Ryu',
+  ultimate: 'Shinku Hadoken'
+})
+</code></pre>
+<p><code>new Character</code> creates the character in memory. It has not been saved to the database yet. <strong>To save to the database, you can run the <code>save</code> method</strong>.</p>
+<pre><code class="language-js">ryu.save(function (error, document) {
+  if (error) console.error(error)
+  console.log(document)
+})
+</code></pre>
+<p>If you run the code above, you should see this in the console.</p>
+<figure role="figure"><img src="/images/2019/mongoose/saved.png" alt="Ryu saved to the database."></figure>
+<h3 id="promises-and-async%2Fawait">Promises and Async/await</h3>
+<p><strong>Mongoose supports promises.</strong> It lets you write nicer code like this:</p>
+<pre><code class="language-js">// This does the same thing as above
+function saveCharacter (character) {
+  const c = new Character(character)
+  return c.save()
+}
+
+saveCharacter({
+  name: 'Ryu',
+  ultimate: 'Shinku Hadoken'
+})
+  .then(doc =&gt; { console.log(doc) })
+  .catch(error =&gt; { console.error(error) })
+</code></pre>
+<p>You can also use the <code>await</code> keyword if you have an asynchronous function.</p>
+<p>If the Promise or Async/Await code looks foreign to you, I recommend reading <a href="/blog/async-await">“JavaScript async and await”</a> before continuing with this tutorial.</p>
+<pre><code class="language-js">async function runCode() {
+  const ryu = new Character({
+    name: 'Ryu',
+    ultimate: 'Shinku Hadoken'
+  })
+
+  const doc = await ryu.save()
+  console.log(doc)
+}
+
+runCode()
+  .catch(error =&gt; { console.error(error) })
+</code></pre>
+<p>Note: I’ll use the async/await format for the rest of the tutorial.</p>
+<h2 id="uniqueness">Uniqueness</h2>
+<p>Mongoose adds a new character to the database each you use <code>new Character</code> and <code>save</code>. If you run the code(s) above three times, you’d expect to see three Ryus in the database.</p>
+<figure role="figure"><img src="/images/2019/mongoose/three-ryus.png" alt="Three Ryus in the database."></figure>
+<p>We don’t want to have three Ryus in the database. We want to have <strong>ONE Ryu only</strong>. To do this, we can use the <strong>unique</strong> option.</p>
+<pre><code class="language-js">const characterSchema = new Schema({
+  name: { type: String, unique: true },
+  ultimate: String
+})
+</code></pre>
+<p>The <code>unique</code> option <strong>creates a unique index</strong>. It ensures we cannot have two documents with the same value (for <code>name</code> in this case).</p>
+<p>For <code>unique</code> to work properly, you need to <strong>clear the Characters collection</strong>. To clear the Characters collection, you can use this:</p>
+<pre><code class="language-js">await Character.deleteMany({})
+</code></pre>
+<p>Try to add two Ryus into the database now. You’ll get an <code>E11000 duplicate key error</code>. You won’t be able to save the second Ryu.</p>
+<figure role="figure"><img src="/images/2019/mongoose/dup-error.png" alt="Duplicated key error."></figure>
+<p>Let’s add another character into the database before we continue the rest of the tutorial.</p>
+<pre><code class="language-js">const ken = new Character({
+  name: 'Ken',
+  ultimate: 'Guren Enjinkyaku'
+})
+
+await ken.save()
+</code></pre>
+<figure role="figure"><img src="/images/2019/mongoose/ryu-ken.png" alt="Database contains two characters."></figure>
+<h2 id="retrieving-a-character">Retrieving a character</h2>
+<p>Mongoose gives you two methods to find stuff from MongoDB.</p>
+<ol>
+<li><code>findOne</code>: Gets one document.</li>
+<li><code>find</code>: Gets an array of documents</li>
+</ol>
+<h3 id="findone">findOne</h3>
+<p><code>findOne</code> <strong>returns the first document</strong> it finds. You can specify any property to search for. Let’s search for <code>Ryu</code>:</p>
+<pre><code class="language-js">const ryu = await Character.findOne({ name: 'Ryu' })
+console.log(ryu)
+</code></pre>
+<figure role="figure"><img src="/images/2019/mongoose/found-one.png" alt="Found Ryu from the database."></figure>
+<h3 id="find">find</h3>
+<p><code>find</code> <strong>returns an array</strong> of documents. If you specify a property to search for, it’ll return documents that match your query.</p>
+<pre><code class="language-js">const chars = await Character.find({ name: 'Ryu' })
+console.log(chars)
+</code></pre>
+<figure role="figure"><img src="/images/2019/mongoose/found-many-ryu.png" alt="Combed through the database and found one character with the name Ryu."></figure>
+<p>If you did not specify any properties to search for, it’ll return an array that contains all documents in the collection.</p>
+<pre><code class="language-js">const chars = await Character.find()
+console.log(chars)
+</code></pre>
+<figure role="figure"><img src="/images/2019/mongoose/found-many.png" alt="Found two characters in the database."></figure>
+<h2 id="updating-a-character">Updating a Character</h2>
+<p>Let’s say Ryu has three special moves:</p>
+<ol>
+<li>Hadoken</li>
+<li>Shoryuken</li>
+<li>Tatsumaki Senpukyaku</li>
+</ol>
+<p>We want to add these special moves into the database. First, we need to update our <code>CharacterSchema</code>.</p>
+<pre><code class="language-js">const characterSchema = new Schema({
+  name: { type: String, unique: true },
+  specials: Array,
+  ultimate: String
+})
+</code></pre>
+<p>Then, we use one of these two ways to update a character:</p>
+<ol>
+<li>Use <code>findOne</code>, then use <code>save</code></li>
+<li>Use <code>findOneAndUpdate</code></li>
+</ol>
+<h3 id="findone-and-save">findOne and save</h3>
+<p>First, we use <code>findOne</code> to get Ryu.</p>
+<pre><code class="language-js">const ryu = await Character.findOne({ name: 'Ryu' })
+console.log(ryu)
+</code></pre>
+<p>Then, we update Ryu to include his special moves.</p>
+<pre><code class="language-js">const ryu = await Character.findOne({ name: 'Ryu' })
+ryu.specials = [
+  'Hadoken',
+  'Shoryuken',
+  'Tatsumaki Senpukyaku'
+]
+</code></pre>
+<p>After we modified <code>ryu</code>, we run <code>save</code>.</p>
+<pre><code class="language-js">const ryu = await Character.findOne({ name: 'Ryu' })
+ryu.specials = [
+  'Hadoken',
+  'Shoryuken',
+  'Tatsumaki Senpukyaku'
+]
+
+const doc = await ryu.save()
+console.log(doc)
+</code></pre>
+<figure role="figure"><img src="/images/2019/mongoose/ryu-updated.png" alt="Updated Ryu."></figure>
+<h3 id="findoneandupdate">findOneAndUpdate</h3>
+<p><code>findOneAndUpdate</code> is the same as MongoDB’s <code>findOneAndModify</code> method.</p>
+<p>Here, you search for Ryu and pass the fields you want to update at the same time.</p>
+<pre><code class="language-js">// Syntax
+await findOneAndUpdate(filter, update)
+</code></pre>
+<pre><code class="language-js">// Usage
+const doc = await Character.findOneAndUpdate(
+  { name: 'Ryu' },
+  {
+    specials: [
+      'Hadoken',
+      'Shoryuken',
+      'Tatsumaki Senpukyaku'
+    ]
+  })
+
+console.log(doc)
+</code></pre>
+<figure role="figure"><img src="/images/2019/mongoose/ryu-updated.png" alt="Updated Ryu."></figure>
+<h3 id="difference-between-findone-%2B-save-vs-findoneandupdate">Difference between findOne + save vs findOneAndUpdate</h3>
+<p>Two major differences.</p>
+<p>First, the <strong>syntax for <code>findOne` + `save</code> is easier to read</strong> than <code>findOneAndUpdate</code>.</p>
+<p>Second, <code>findOneAndUpdate</code> does not trigger the <code>save</code> middleware.</p>
+<p><strong>I’ll choose <code>findOne</code> + <code>save</code></strong> over <code>findOneAndUpdate</code> anytime because of these two differences.</p>
+<h2 id="deleting-a-character">Deleting a character</h2>
+<p>There are two ways to delete a character:</p>
+<ol>
+<li><code>findOne</code> + <code>remove</code></li>
+<li><code>findOneAndDelete</code></li>
+</ol>
+<h3 id="using-findone-%2B-remove">Using findOne + remove</h3>
+<pre><code class="language-js">const ryu = await Character.findOne({ name: 'Ryu' })
+const deleted = await ryu.remove()
+</code></pre>
+<h3 id="using-findoneanddelete">Using findOneAndDelete</h3>
+<pre><code class="language-js">const deleted = await Character.findOneAndDelete({ name: 'Ken' })
+</code></pre>
+<h2 id="quick-summary">Quick summary</h2>
+<p>You learned how to use Mongoose to:</p>
+<ol>
+<li>Connect to a database</li>
+<li>Create, Read, Update, and Delete documents</li>
+</ol>
+
+    
+      <p>If you enjoyed this article, please support me by sharing this article <a href="https://twitter.com/share?text=Mongoose%20101 by @zellwk 👇 &url=https://zellwk.com/blog/mongoose/" target="_blank" rel="noopener">Twitter</a> or <a href="https://zellwk-com.ck.page/products/zell">buying me a coffee</a> 😉. If you spot a typo, I’d appreciate if you can <a href="https://github.com/zellwk/zellwk.com/blob/master/./src/posts/2019-12-11-mongoose-101.md">correct it on GitHub</a>. Thank you!</p>
+
+    
+  </article>
+
+  <div class="ck-unsubcribed-content">
+    <div class="post-layout">
+      <section id="convertkit" class="o-content c-ck ck-layout jsCkForm">
+
+
+<script defer id="_ck_212048" src="https://forms.convertkit.com/212048?v=6"></script></section>
+    </div>
+  </div>
+
+  
+  
+    <section class="o-words series-layout">
+      <h2>Other articles in this series</h2>
+      <ol>
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            <li>
+              
+                <span>Mongoose 101</span>
+              
+            </li>
+          
+        
+          
+            <li>
+              
+                <a href="/blog/mongoose-subdocuments/">Mongoose 101: Working with subdocuments</a>
+              
+            </li>
+          
+        
+          
+            <li>
+              
+                <a href="/blog/mongoose-population/">Mongoose 101: Population</a>
+              
+            </li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ol>
+    </section>
+  
+</div>
+
+<div class="l-wrap">
+  <div class="post-layout">
+    <nav class="post-nav">
+      
+
+          <a class="button" data-type="outline" href="/blog/struggle-with-bootcamp/" data-link-to="previous-post">
+              <svg height="1em" viewbox="0 0 22 38">
+                <path fill="currentColor" d="M18.9 38l3.1-3.1L6.1 19 22 3.1 18.9 0 0 19z"></path>
+              </svg>
+              <span>What to do if you&#39;re struggling with a Bootcamp</span>
+            </a>
+          <a class="button" data-type="outline" href="/blog/mongoose-subdocuments/" data-link-to="next-post">
+              <span>Mongoose 101: Working with subdocuments</span>
+              <svg height="1em" viewbox="0 0 22 38">
+                <path fill="currentColor" d="M3.1 0L0 3.1 15.9 19 0 34.9 3.1 38 22 19z"></path>
+              </svg>
+            </a>
+          </nav>
+  </div>
+</div>
+</main><footer class="c-footer" role="contentinfo">
+  <div class="l-wrap">
+    <div class="l-wrap__full l-footer__wrap">
+      <div class="c-footer__cta">
+        <ul class="c-footer__nav">
+          <li>
+            <span>About Zell</span>
+            <ul>
+              <li>
+                <a href="/">Home</a>
+              </li>
+              <li>
+                <a href="/about">About</a>
+              </li>
+              <li>
+                <a href="/contact">Contact</a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <span>Things I made</span>
+            <ul>
+              <li>
+                <a href="/products#course-section">Courses</a>
+              </li>
+              <li>
+                <a href="/products#library-section">Libraries</a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <span>Newsletter</span>
+            <ul>
+              <li>
+                <a href="/newsletter">Email</a>
+              </li>
+              <li>
+                <a href="/rss">RSS</a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <span>Social Media</span>
+            <ul>
+              <li>
+                <a href="https://twitter.com/zellwk">Twitter</a>
+              </li>
+              <li>
+                <a href="https://github.com/zellwk">Github</a>
+              </li>
+              <li>
+                <a href="https://www.youtube.com/c/zellwk">Youtube</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="c-footer__info">
+        <p>
+          <span>
+            © 2022 <a href="/blog">Zell Liew</a>
+            · <a href="/terms">Terms</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+</div><div class="c-offsite-container jsOffsiteContainer">
+  <div class="c-offsite">
+    <div class="c-offsite__header">
+      <a class="c-main-nav__logo" href="/about">
+        <div class="o-zell--white"><svg id="zell" viewBox="0 0 90 30">
+  <title> Zell </title>
+  <g>
+    <g class="z">
+      <path class="o-zell__bar" d="M0 0v6.332h24.336L24.384 0z"/>
+      <path class="o-zell__text" d="M24.336 6.332h-8.154L0 23.425v6.332h24.336v-6.38H9.562z"/>
+    </g>
+    <path class="e o-zell__text" d="M45.706 29.757v-5.34H34.657v-3.614h9.194v-4.941h-9.194V12.28h11.05V6.956H27.893v22.801z"/>
+    <path class="l1 o-zell__text" d="M68.124 29.757v-5.9H57.938V6.956h-7.275v22.801z"/>
+    <path class="l2 o-zell__text" d="M89.646 29.757v-5.9H79.461V6.956h-7.276v22.801z"/>
+  </g>
+</svg>
+</div>
+      </a>
+      <a href="#" class="c-offsite__close jsOffsiteClose">&times;</a>
+    </div>
+    <div class="c-offsite__content"><nav class="c-offsite__nav">
+    <a href="/about" class="o-navlink--offsite">About</a>
+    <a href="/blog" class="o-navlink--offsite">Articles</a>
+    <a href="/newsletter" class="o-navlink--offsite">Newsletter</a>
+    <a href="/contact" class="o-navlink--offsite">Contact</a>
+  </nav></div>
+  </div>
+</div>
+<div class="c-modal-container jsModalContainer">
+  <div class="l-wrap">
+    <div class="c-modal jsModal jsLoader">
+      <h3 class="c-modal__title jsModalTitle jsLoaderTitle">Hold on while i sign you up&hellip;</h3>
+
+      <div class="c-modal__content c-post">
+        <div class="c-loader">
+          <div class="c-loader__spinner-container">
+            <div class="c-loader__spinner o-spinner jsSpinner">
+              <div class="o-spinner__item--pink"></div>
+              <div class="o-spinner__item"></div>
+              <div class="o-spinner__item"></div>
+            </div>
+            <div class="c-loader__success-icon jsSuccessIcon">🤗</div>
+          </div>
+
+          <div class="c-loader__messages jsLoaderMessages jsModalMessages">
+            <div class="jsModalSuccessText">Woohoo! You&rsquo;re in!</div>
+            <div>Now, hold on while I redirect you.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+    
+      <script module src="/js/main-ce391bea7f.mjs"></script>
+      <script nomodule src="/js/main-legacy-5130a774d8.js"></script>
+
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-FF5QLS3KNY"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'G-FF5QLS3KNY');
+      </script>
+
+      <!-- Hotjar Tracking Code for https://zellwk.com -->
+      <script defer>
+        (function (h, o, t, j, a, r) {
+          h.hj = h.hj || function () {
+            (h.hj.q = h.hj.q || []).push(arguments)
+          };
+          h._hjSettings = {
+            hjid: 500360,
+            hjsv: 6
+          };
+          a = o.getElementsByTagName('head')[0];
+          r = o.createElement('script');
+          r.async = 1;
+          r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+          a.appendChild(r);
+        })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+      </script>
+  </body>
+</html>

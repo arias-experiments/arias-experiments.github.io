@@ -1,16 +1,69 @@
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap Portfolio Page Template</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap-4.4.1.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/prism.css" data-noprefix>
+	  
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/index.html">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Experiments
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="node-mong-virtuozzo/node-mongo-virtuozzo.html">Node.JS + Mongo + Reclaim</a>
+              <a class="dropdown-item" href="#">Future Experiment</a>
+              <a class="dropdown-item" href="#">More in the Future</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <section>
+      <div class="jumbotron text-center mt-2">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+              <h1>A Welcome to the Experiments Home Page</h1>
+              <p>This is the home page for a diversity of experiments using different programming languages or tools. It can be considered a series of tutorials.</p>
+              <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more »</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-</head>
-
-<body>
-<h1>Welcome to this GitHub.IO page</h1>
-<p>I plan to host here some of my coding experiences to share with the world, hopefully something might be useful for someone else, perhaps not all is going to be all new, but some may have a different perspective that helps more people.</p>
-
-<h2>Current Projects</h2>
-<ul>
-	<li><a href="node-mong-virtuozzo/node-mongo-virtuozzo.html">Deploying a Node.JS application using MongoDB on Reclaim.Cloud/Jelastic/Virtuozzo</a></li>
-</ul>
-
-</body>
+    <hr>
+    <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <p>Copyright © Carlos R. Arias. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap-4.4.1.js"></script>
+	<script src="js/prism.js"></script>
+	  
+  </body>
 </html>
