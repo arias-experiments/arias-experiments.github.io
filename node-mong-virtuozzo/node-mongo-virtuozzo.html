@@ -1,92 +1,135 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Create, and deploy a simple NodeJS + Mongo + Reclaim.cloud Application</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploying a NodeJS with Express with MongoDB on reclaim.cloud</title>
+<!-- Bootstrap -->
+<link href="../css/bootstrap-4.4.1.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/prism.css" data-noprefix>
 </head>
 
 <body>
-<h1>Pre-Requirements</h1>
-<p>For this tutorial I will use the following software/Services:</p>
-<ul>
-	<li>Command Line</li>
-	<li>NodeJS, MongoDB local copy for testing</li>
-	<li>Visual Studio Code</li>
-	<li>Postman</li>
-	<li>GitHub</li>
-</ul>
+<div class="container">
+  <h2>Pre-Requirements</h2>
+  <p>For this tutorial I will use the following software/Services:</p>
+  <ul>
+    <li>Command Line</li>
+    <li>NodeJS, MongoDB local copy for testing</li>
+    <li>Visual Studio Code</li>
+    <li>Postman</li>
+    <li>GitHub</li>
+  </ul>
+  <p>In the future it would be great to add the creation of the Docker Environment to have a local copy for testsing on the computer, and then deploying that, but I will keep it simple for now</p>
+</div>
+<div class="container-lg">
+  <h2 id="general-home">General Steps</h2>
+  <ol>
+    <li>Create an Account on <a href="https://reclaim.cloud/">Reclaim Cloud</a>. After creating it, login.</li>
+    <li><a href="#new-environ">Create a New Environment</a></li>
+    <li><a href="#repo">Create and setup a GitHub repository for your code</a>, I will name it books-nodejs-mongo</li>
+    <li><a href="#node-initial">Do the initial setup of the NodeJS Application</a></li>
+    <li>Create the Simple CRUD/REST Application</li>
+  </ol>
+</div>
+<div class="container-lg">
+  <h3 id="new-environ">Creating a New Environement</h3>
+  <p>Once you have logged in you will have an empty environments page:</p>
+  <figure class="figure"> <img src="images/reclaim.cloud.page1.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+    <figcaption class="figure-caption">Reclaim Cloud Main Page</figcaption>
+  </figure>
+  <ol>
+    <li>Click on "Create New Environment"</li>
+    <li>Select the Node.js Tab</li>
+    <li>Make sure the JS is selected to the left</li>
+    <li>Click on NoSQL and Select MongoDB</li>
+    <li>Since this is just a toy application, use minimum resources, when you decide to get serious you will need to set the application servers scalability appropriately. In the example see that I set it up to have 1 reserved cloudet and 4 cloudets for scaling limit. I set the Disk Limit to 5 GB.</li>
+    <li>Set the name of your Environment, I named it <code>my-books</code></li>
+    <figure class="figure"> <img src="images/first-environment.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Creating the First Environment</figcaption>
+    </figure>
+    <li>Click on Create, it will take a while to create the platform.</li>
+    <figure class="figure"> <img src="images/my-books-creating.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Creating the <code>my-books</code> Environment</figcaption>
+    </figure>
+    <li>Once the environment is created it will appear like:</li>
+    <figure class="figure"> <img src="images/environment-created.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption"><code>my-books</code> Environment Created</figcaption>
+    </figure>
+  </ol>
+</div>
 <div>
-	<p>In the future it would be great to add the creation of the Docker Environment to have a local copy for testsing on the computer, and then deploying that, but I will keep it simple for now</p>
+  <p>Another tutorial could include the balancing part, once again, I'm keeping this one short</p>
 </div>
-<h1>General Steps</h1>
-	<ol>
-		<li>Create an Account on <a href="https://reclaim.cloud/">Reclaim.cloud</a>. After creating it, login.</li>
-		<li>Create a New Environment</li>
-		<li>Create and setup a GitHub repository for your code, I will name it books-nodejs-mongo</li>
-		<li>Do the initial setup of the NodeJS Application</li>
-		<li>Create the Simple Application</li>
-		
-	</ol>
-	
-	
-<h2 id="new-environ">Creating a New Environement</h2>
-	<p>Once you have logged in you will have an empty environments page:</p>
-<img src="images/reclaim.cloud.page1.png" width="640"  alt=""/>
-<ol>
-	<li>Click on "Create New Environment"</li>
-	<li>Select the Node.js Tab</li>
-	<li>Make sure the JS is selected to the left</li>
-	<li>Click on NoSQL and Select MongoDB</li>
-	<li>Since this is just a toy application, use minimum resources, when you decide to get serious you will need to set the application servers scalability appropriately. In the example see that I set it up to have 1 reserved cloudet and 4 cloudets for scaling limit. I set the Disk Limit to 5 GB.&nbsp;</li>
-	<li>Set the name of your Environment, I named it <code>my-books</code></li>
-	<img src="images/first-environment.png" width="640"  alt=""/>
-	<li>Click on Create, it will take a while to create the platform.</li>
-	<img src="images/my-books-creating.png" width="640"  alt=""/>
-	<li>Once the environment is created it will appear like:</li>
-	<img src="images/environment-created.png" width="640"  alt=""/>
-</ol>
+<div class="container-lg">
+  <h3 id="repo">Creating and Setting up a GitHub Repository</h3>
+  <ol>
+    <li>Create the repository</li>
+    <dl class="row">
+      <dt class="col-sm-3">Repository name</dt>
+      <dd class="col-sm-9 alert-secondary">book-nodejs-mongo</dd>
+      <dt class="col-sm-3">Description</dt>
+      <dd class="col-sm-9 alert-secondary">A simple book REST/CRUD...</dd>
+      <dt class="col-sm-3">Visibility</dt>
+      <dd class="col-sm-9 alert-secondary">Public
+        <p>(This is if you want your repository to be visible to the world)</p>
+      </dd>
+      <dt class="col-sm-3">Add .gitignore</dt>
+      <dd class="col-sm-9">
+        <dl class="row">
+          <dt class="col-sm-4 alert-secondary">Node</dt>
+          <dd class="col-sm-8">Very important to prevent pushing <strong>all</strong> dependencies located in <code>node_modules</code>, among other stuff we don't need to upload to GitHub</dd>
+        </dl>
+      </dd>
+    </dl>
+    <figure class="figure"> <img src="images/019-new-repo.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Create a New Repository</figcaption>
+    </figure>
 
-	<div>
-	<p>Another tutorial could include the balancing part, once again, I'm keeping this one short</p>
+    <figure class="figure"> <img src="images/020-repo-created.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Repository Created</figcaption>
+    </figure>
+	  
+    <li>Clone the repository to your computer, note that the repo is basically empty</li>
+    <figure class="figure"> <img src="images/021-cloning-repo.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Cloning Repository</figcaption>
+    </figure>
+    
+  </ol>
 </div>
-	
-	<h2 id="repo">Creating and Setting up a GitHub Repository</h2>
-	
-	<ol>
-		<li>Create the repository</li>
-		<li>Clone the repository to your computer, note that the repo is basically empty</li>
-		<img src="images/cloning-locally.png" width="640"  alt=""/>
-		<img src="images/entered-cloned-repo.png" width="640"  alt=""/>
-		
-	</ol>
-	
-	<h2>NodeJS Initial Setup</h2>
-	<ol>
-		<li>Setup the new NodeJS application on the repository recently cloned</li>
-		<li>Create the <code>package.json</code> file</li>
-		<img src="images/010-npm-init.png" width="640"  alt=""/>
-		<li>Check the <code>package.json</code> file, not that I am using Visual Studio Code as editor (You may want to use vim if you wish!</li>
-		<img src="images/011-package-json-vsc.png" width="640"  alt=""/>
-		<li>Install the dependencies we will need for this simple example, in our case:</li>
-		<ul>
-			<li>Express: <code>npm install -s express</code></li>
-			<li>Mongoose: <code>npm install -s mongoose</code></li>
-			<li>Body Parser: <code>npm install -s body-parser</code></li>
-			<img src="images/012-install-dependencies.png" width="640"  alt=""/>
-		</ul>
-		<li>Some last modification to the <code>package.json</code> file, for the program to run on Reclaim Cloud (or using <code>npm start</code> it needs to add a <code>start</code> value to the <code>scripts</code> part.</li>
-		<img src="images/013-package-json-ready.png" width="640"  alt=""/>
-	</ol>
-	<h2>Create the Simple Application</h2>
-	<p>Our application is going to be a REST API application that will provide a GET and a POST request to access a database of books. I did mention that this was going to be simple, right?</p>
-	<ol>
-		<li>Create the Model</li>
-		<ol>
-			<li>Create a directory inside your project called <code>models</code></li>
-			<li>Inside that directoy create a file called <code>book.js</code>. This file will containe the definition of the structure that will be used for our books</li>
-			<div>
-				<pre>
-				<code>
+<hr/>	
+<div class="container-lg">
+  <h3 id="node-initial">NodeJS Initial Setup</h3>
+  <ol>
+    <li>Setup the new NodeJS application on the repository recently cloned, run <code>npm init</code>, this will create the initial <code>package.json</code> file</li>
+    <figure class="figure"> <img src="images/010-npm-init.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Initialazing the Node application</figcaption>
+    </figure>
+
+    <li>Check the <code>package.json</code> file, not that I am using Visual Studio Code as editor (You may want to use vim if you wish!</li>
+    <img src="images/011-package-json-vsc.png" width="640"  alt=""/>
+    <li>Install the dependencies we will need for this simple example, in our case:</li>
+    <ul>
+      <li>Express: <code>npm install -s express</code></li>
+      <li>Mongoose: <code>npm install -s mongoose</code></li>
+      <li>Body Parser: <code>npm install -s body-parser</code></li>
+      <img src="images/012-install-dependencies.png" width="640"  alt=""/>
+    </ul>
+    <li>Some last modification to the <code>package.json</code> file, for the program to run on Reclaim Cloud (or using <code>npm start</code> it needs to add a <code>start</code> value to the <code>scripts</code> part.</li>
+    <img src="images/013-package-json-ready.png" width="640"  alt=""/>
+  </ol>
+</div>
+<h2>Create the Simple Application</h2>
+<p>Our application is going to be a REST API application that will provide a GET and a POST request to access a database of books. I did mention that this was going to be simple, right?</p>
+<ol>
+  <li>Create the Model</li>
+  <ol>
+    <li>Create a directory inside your project called <code>models</code></li>
+    <li>Inside that directoy create a file called <code>book.js</code>. This file will containe the definition of the structure that will be used for our books</li>
+    <div>
+      <pre>
+				<code class="language-js">
 					const mongoose = require('mongoose');
 					const Schema = mongoose.Schema;
 					const BookSchema = new Schema({
@@ -98,14 +141,14 @@
 					module.exports = mongoose.model('Book', BookSchema);
 				</code>
 				</pre>
-			</div>
-		</ol>
-		<li>Create the Route</li>
-		<ol>
-			<li>Create a directory inside your project called <code>routes</code></li>
-			<li>Inside that directory create a file called <code>books.js</code>. This file will contain the route handling for your books.</li>
-			<div>
-				<pre>
+    </div>
+  </ol>
+  <li>Create the Route</li>
+  <ol>
+    <li>Create a directory inside your project called <code>routes</code></li>
+    <li>Inside that directory create a file called <code>books.js</code>. This file will contain the route handling for your books.</li>
+    <div>
+      <pre>
 				<code>
 					const express = require('express');
 					const router = express.Router();
@@ -148,10 +191,10 @@
 					module.exports = router;
 				</code>
 				</pre>
-			</div>
-		</ol>
-		<li>Create a helper file to connect to database, name it <code>database.js</code>, place the file in the same directory as <code>index.js</code>. Note that at the moment our application is going to connect to a local MongoDB database, this will change once we are sure everything is in working order</li>
-		<pre>
+    </div>
+  </ol>
+  <li>Create a helper file to connect to database, name it <code>database.js</code>, place the file in the same directory as <code>index.js</code>. Note that at the moment our application is going to connect to a local MongoDB database, this will change once we are sure everything is in working order</li>
+  <pre>
 		<code>
 			const mongoose = require('mongoose');
 			const url = 'mongodb://localhost/books';
@@ -170,8 +213,8 @@
 			module.exports = db;		
 		</code>
 		</pre>
-		<li>Put all together on <code>index.js</code></li>
-		<pre>
+  <li>Put all together on <code>index.js</code></li>
+  <pre>
 		<code>
 			const express = require('express');
 			const bodyParser = require('body-parser');
@@ -190,25 +233,35 @@
 			});		
 		</code>
 		</pre>
-		<li>Run the application. Go to the terminal, and on the project directory type: <code>node index.js</code></li>
-		<img src="images/014-run-the-app-locally.png" width="640"  alt=""/>
-		<li>Check that the application is running opening <code>localhost:8001/api/books</code> on your browser. Note that we are using <code>/api/books</code> because that is the suffix we specify on <code>index.js</code></li>
-		<img src="images/015-browser-running.png" width="640"  alt=""/>
-		<li>Using Postman, you can now test the requests
-			<ul>
-				<li>GET, it shows an empty array</li>
-				<img src="images/016-postman-get.png" width="640"  alt=""/>
-				<li>POST, add a book using the <code>x-www-form-urlencoded</code> parameters</li>
-				<img src="images/017-postman-post.png" width="640"  alt=""/>
-				<li>GET, shows the recently inserted record</li>
-				<img src="images/018-postman-get.png" width="640"  alt=""/>
-			</ul>
-		</li>
-		
-		commit and push
-		
-		
-	</ol>
-	
+  <li>Run the application. Go to the terminal, and on the project directory type: <code>node index.js</code></li>
+  <img src="images/014-run-the-app-locally.png" width="640"  alt=""/>
+  <li>Check that the application is running opening <code>localhost:8001/api/books</code> on your browser. Note that we are using <code>/api/books</code> because that is the suffix we specify on <code>index.js</code></li>
+  <img src="images/015-browser-running.png" width="640"  alt=""/>
+  <li>Using Postman, you can now test the requests
+    <ul>
+      <li>GET, it shows an empty array</li>
+      <img src="images/016-postman-get.png" width="640"  alt=""/>
+      <li>POST, add a book using the <code>x-www-form-urlencoded</code> parameters</li>
+      <img src="images/017-postman-post.png" width="640"  alt=""/>
+      <li>GET, shows the recently inserted record</li>
+      <img src="images/018-postman-get.png" width="640"  alt=""/>
+    </ul>
+  </li>
+  commit and push
+</ol>
+<footer class="text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <p>Copyright © Carlos R. Arias. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../js/jquery-3.4.1.min.js"></script> 
+<!-- Include all compiled plugins (below), or include individual files as needed --> 
+<script src="../js/popper.min.js"></script> 
+<script src="../js/bootstrap-4.4.1.js"></script> 
+<script src="../js/prism.js"></script>
 </body>
 </html>
