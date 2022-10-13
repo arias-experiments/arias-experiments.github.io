@@ -21,44 +21,20 @@
     <li>Postman</li>
     <li>GitHub</li>
   </ul>
-  <p>In the future it would be great to add the creation of the Docker Environment to have a local copy for testsing on the computer, and then deploying that, but I will keep it simple for now</p>
+  <p>In the future it would be great to add the creation of the Docker Environment to have a local copy for testsing on the computer, and then deploying that, but I will keep it simple for now.</p>
 </div>
 <div class="container-lg">
   <h2 id="general-home">General Steps</h2>
   <ol>
-    <li>Create an Account on <a href="https://reclaim.cloud/">Reclaim Cloud</a>. After creating it, login.</li>
-    <li><a href="#new-environ">Create a New Environment</a></li>
-    <li><a href="#repo">Create and setup a GitHub repository for your code</a>, I will name it books-nodejs-mongo</li>
+    <li><a href="#repo">Create and setup a GitHub repository for your code</a>, for this tutorial I will name it books-nodejs-mongo</li>
     <li><a href="#node-initial">Do the initial setup of the NodeJS Application</a></li>
     <li>Create the Simple CRUD/REST Application</li>
+    <li>Deploying to Reclaim Cloud&nbsp;</li>
+    <li> * * Create an Account on <a href="https://reclaim.cloud/">Reclaim Cloud</a>. After creating it, login.</li>
+    <li> * * <a href="#new-environ">Create a New Environment</a></li>
   </ol>
 </div>
-<div class="container-lg">
-  <h3 id="new-environ">Creating a New Environement</h3>
-  <p>Once you have logged in you will have an empty environments page:</p>
-  <figure class="figure"> <img src="images/reclaim.cloud.page1.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
-    <figcaption class="figure-caption">Reclaim Cloud Main Page</figcaption>
-  </figure>
-  <ol>
-    <li>Click on "Create New Environment"</li>
-    <li>Select the Node.js Tab</li>
-    <li>Make sure the JS is selected to the left</li>
-    <li>Click on NoSQL and Select MongoDB</li>
-    <li>Since this is just a toy application, use minimum resources, when you decide to get serious you will need to set the application servers scalability appropriately. In the example see that I set it up to have 1 reserved cloudet and 4 cloudets for scaling limit. I set the Disk Limit to 5 GB.</li>
-    <li>Set the name of your Environment, I named it <code>my-books</code></li>
-    <figure class="figure"> <img src="images/first-environment.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
-      <figcaption class="figure-caption">Creating the First Environment</figcaption>
-    </figure>
-    <li>Click on Create, it will take a while to create the platform.</li>
-    <figure class="figure"> <img src="images/my-books-creating.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
-      <figcaption class="figure-caption">Creating the <code>my-books</code> Environment</figcaption>
-    </figure>
-    <li>Once the environment is created it will appear like:</li>
-    <figure class="figure"> <img src="images/environment-created.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
-      <figcaption class="figure-caption"><code>my-books</code> Environment Created</figcaption>
-    </figure>
-  </ol>
-</div>
+
 <div>
   <p>Another tutorial could include the balancing part, once again, I'm keeping this one short</p>
 </div>
@@ -73,7 +49,7 @@
       <dd class="col-sm-9 alert-secondary">A simple book REST/CRUD...</dd>
       <dt class="col-sm-3">Visibility</dt>
       <dd class="col-sm-9 alert-secondary">Public
-        <p>(This is if you want your repository to be visible to the world)</p>
+        <p>(This is if you want your repository to be visible to the world, also will simplify the deployment process)</p>
       </dd>
       <dt class="col-sm-3">Add .gitignore</dt>
       <dd class="col-sm-9">
@@ -86,12 +62,13 @@
     <figure class="figure"> <img src="images/019-new-repo.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
       <figcaption class="figure-caption">Create a New Repository</figcaption>
     </figure>
+	<p>Once the repository is created GitHub will show you the repo page.</p>
 
     <figure class="figure"> <img src="images/020-repo-created.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
       <figcaption class="figure-caption">Repository Created</figcaption>
     </figure>
 	  
-    <li>Clone the repository to your computer, note that the repo is basically empty</li>
+    <li>Clone the repository to your computer, the repo is basically empty. Move to the directory where the repository was created. <em>Note</em>: keep in mind where you cloned your repo.</li>
     <figure class="figure"> <img src="images/021-cloning-repo.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
       <figcaption class="figure-caption">Cloning Repository</figcaption>
     </figure>
@@ -103,11 +80,33 @@
   <h3 id="node-initial">NodeJS Initial Setup</h3>
   <ol>
     <li>Setup the new NodeJS application on the repository recently cloned, run <code>npm init</code>, this will create the initial <code>package.json</code> file</li>
-    <figure class="figure"> <img src="images/010-npm-init.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+    <dl class="row">
+      <dt class="col-sm-3">Package name:</dt>
+      <dd class="col-sm-9 alert-secondary"><em>default value</em></dd>
+      <dt class="col-sm-3">Version:</dt>
+      <dd class="col-sm-9 alert-secondary">0.0.1</dd>
+      <dt class="col-sm-3">Description:</dt>
+      <dd class="col-sm-9 alert-secondary">A simple NodeJS, Express and MongoDB application</dd>
+      <dt class="col-sm-3">entry point:</dt>
+      <dd class="col-sm-9 alert-secondary"><em>default value</em></dd>
+      <dt class="col-sm-3">test command:</dt>
+      <dd class="col-sm-9 alert-secondary"><em>default value</em></dd>
+      <dt class="col-sm-3">git repository:</dt>
+      <dd class="col-sm-9 alert-secondary"><em>default value</em></dd>
+      <dt class="col-sm-3">keywords:</dt>
+      <dd class="col-sm-9 alert-secondary">nodejs,mongodb,express,reclaim cloud</dd>
+      <dt class="col-sm-3">author:</dt>
+      <dd class="col-sm-9 alert-secondary">your name if you want</dd>
+      <dt class="col-sm-3">license:</dt>
+      <dd class="col-sm-9 alert-secondary"><em>default value</em></dd>
+      <dt class="col-sm-3">Is this OK? (yes)</dt>
+      <dd class="col-sm-9 alert-secondary"><em>default value</em></dd>
+    </dl>
+	<figure class="figure"> <img src="images/010-npm-init.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
       <figcaption class="figure-caption">Initialazing the Node application</figcaption>
     </figure>
 
-    <li>Check the <code>package.json</code> file, not that I am using Visual Studio Code as editor (You may want to use vim if you wish!</li>
+    <li>Check the <code>package.json</code> file, not that I am using Visual Studio Code as editor (You may want to use vim if you wish!)</li>
     <img src="images/011-package-json-vsc.png" width="640"  alt=""/>
     <li>Install the dependencies we will need for this simple example, in our case:</li>
     <ul>
@@ -116,11 +115,12 @@
       <li>Body Parser: <code>npm install -s body-parser</code></li>
       <img src="images/012-install-dependencies.png" width="640"  alt=""/>
     </ul>
-    <li>Some last modification to the <code>package.json</code> file, for the program to run on Reclaim Cloud (or using <code>npm start</code> it needs to add a <code>start</code> value to the <code>scripts</code> part.</li>
+    <li>Some last modification to the <code>package.json</code> file, for the program to run on Reclaim Cloud (or using <code>npm start</code> it needs to add a <code>start</code> value to the <code>scripts</code> part. (See line 7 below)</li>
     <img src="images/013-package-json-ready.png" width="640"  alt=""/>
   </ol>
 </div>
-<h2>Create the Simple Application</h2>
+<div class="container-lg">
+<h2 id="create-simple-app">Create the Simple Application</h2>
 <p>Our application is going to be a REST API application that will provide a GET and a POST request to access a database of books. I did mention that this was going to be simple, right?</p>
 <ol>
   <li>Create the Model</li>
@@ -249,6 +249,134 @@
   </li>
   commit and push
 </ol>
+
+</div>
+<div class="container-lg">
+  <h3 id="new-environ">Creating a New Environement</h3>
+  <p>Once you have logged in you will have an empty environments page:</p>
+  <figure class="figure"> <img src="images/reclaim.cloud.page1.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+    <figcaption class="figure-caption">Reclaim Cloud Main Page</figcaption>
+  </figure>
+  <ol>
+    <li>Click on "Create New Environment"</li>
+    <li>Select the Node.js Tab</li>
+    <li>Make sure the JS is selected to the left</li>
+    <li>Click on NoSQL and Select MongoDB</li>
+    <li>Since this is just a toy application, use minimum resources, when you decide to get serious you will need to set the application servers scalability appropriately. In the example see that I set it up to have 1 reserved cloudet and 4 cloudets for scaling limit. I set the Disk Limit to 5 GB.</li>
+    <li>Set the name of your Environment, I named it <code>my-books</code></li>
+    <figure class="figure"> <img src="images/first-environment.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Creating the First Environment</figcaption>
+    </figure>
+    <li>Click on Create, it will take a while to create the platform.</li>
+    <figure class="figure"> <img src="images/my-books-creating.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption">Creating the <code>my-books</code> Environment</figcaption>
+    </figure>
+    <li>Once the environment is created it will appear like:</li>
+    <figure class="figure"> <img src="images/environment-created.png" class="figure-img img-fluid rounded" width="640"  alt="New Environment"/>
+      <figcaption class="figure-caption"><code>my-books</code> Environment Created</figcaption>
+    </figure>
+  </ol>
+</div>
+<div class="container-lg">
+	<h3 id="deploy-reclaim">Deploying on Reclaim</h3>
+	<ol>
+		<li>Create an Environment (done above)</li>
+		<li>Check email to see MongoDB credentials</li>
+		<img src="images/024-email-mongodb-credentials.png" width="640"  alt=""/>
+		
+		<li>Setup database
+			<ol>
+				<li>Open a WebSSH window to access the MongoDB Server</li>
+				<img src="images/022-nosql-open-webssh.png" width="640"  alt=""/>
+				<li>Go to the console</li>
+				<img src="images/023-mongo-ssh-console.png" width="640"  alt=""/>
+				<li>Login using the MongoDB Credentials received by email</li>
+				<pre>
+				<code class="shell-session">
+					mongo localhost/admin -u admin -XXXXXX
+				</code>
+				</pre>
+				<img src="images/025-login-mongodb.png" width="640"  alt=""/>
+				<li>Create the database and the user for the database</li>
+				<pre>
+				<code class="mongodb">
+					use books
+					db.createUser({user: "book-user", pwd: "mobydick", roles: [{role: "readWrite", db: "books"}]})
+				</code>
+				</pre>
+				<img src="images/026-createdb-createuser.png" width="640"  alt=""/>
+			</ol>
+		
+		</li>
+		
+		<li>Create a deployment, options: GitHub or ZIP
+			<ul>
+				<li>Using GitHub
+					<ol>
+						<li>Go to the "Deployment Manager" tap</li>
+						<img src="images/027-deployment-tab.png" width="640"  alt=""/>
+						<li>Add a Repository: Add Repo</li>
+						<img src="images/028-add-repo.png" width="640"  alt=""/>
+						<li>Set up the Repository</li>
+						<img src="images/029-setting-up-repo.png" width="320"  alt=""/>
+						<li>Click Deploy and select the environment you created, wait until it is deployed</li>
+						<img src="images/030-deploy.png" width="320"  alt=""/>
+						<img src="images/031-deployed.png" width="320"  alt=""/>
+					</ol>
+				</li>
+				<li>Using ZIP
+				</li>
+			
+			</ul>
+		</li>
+		<li>GeoQuiz Specific (documentation)
+			<ol>
+				<li>Open Web SSH session from the application server</li>
+				<img src="images/032-app-server-webssh.png" width="640"  alt=""/>
+				<li>Update the database credentials on createdabase.js and app.js</li>
+				<pre>
+				<code class="javascript">
+					const url = 'mongodb://user:pass@node1111-xx.us.reclaim.cloud/geoquiz';
+				</code>
+				</pre>
+				<li>Run the <code>createdabase.js</code> program to initialize the database</li>
+				<pre>
+					<code class="shell-session">
+						node createdatabase.js
+					</code>
+				</pre>
+				<img src="images/033-createdatabase.png" width="640"  alt=""/>
+				If there are no errors it should work!
+				<p>There were errors! The Node version needed to be 16.16, updates to packages were necessary to avoid warnings</p>
+				<p>Additionally when adding the SSL part, it broke because the server was expecting an encrypted response and it did not get one</p>
+				<pre>
+BSONTypeError: Argument passed in must be a string of 12 bytes or a string of 24 hex characters or an integer
+    at new BSONTypeError (/home/jelastic/ROOT/node_modules/bson/lib/error.js:41:28)
+    at new ObjectId (/home/jelastic/ROOT/node_modules/bson/lib/objectid.js:67:23)
+    at ObjectId (/home/jelastic/ROOT/node_modules/bson/lib/objectid.js:26:20)
+    at checkAnswersHandler (/home/jelastic/ROOT/controllers/country.controller.js:39:28)
+    at Layer.handle [as handle_request] (/home/jelastic/ROOT/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/jelastic/ROOT/node_modules/express/lib/router/route.js:144:13)
+    at Route.dispatch (/home/jelastic/ROOT/node_modules/express/lib/router/route.js:114:3)
+    at Layer.handle [as handle_request] (/home/jelastic/ROOT/node_modules/express/lib/router/layer.js:95:5)
+    at /home/jelastic/ROOT/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/home/jelastic/ROOT/node_modules/express/lib/router/index.js:346:12)				
+				</pre>
+				<p>Going to try the Let's Encrypt Free SSL add one and see if that provides the required key/cert data required for the https object in Node</p>
+				<p>Tried but no luck. Seems I need to use a load balancer, because custon SSL is not supported by nodejs, thus I need to create yet another environment. I will need to first copy the changes I made on the server to the repo. mendokusai</p>
+				<p>Instructions for SSL, read <a href="https://jelastic.com/blog/nodejs-cloud-hosting-in-docker-containers/">here</a></p>
+				<p>Add Let's Encrypt SSL, then "Update Now"</p>
+				<p>Go to Environment Settings</p>
+				<p>Go to Custon SSL</p>
+				<p>Looks like I messed up, I don't know whether I created a custom ssl in the environment </p>
+				
+			</ol>
+		</li>
+	</ol>
+</div>
+<div>
+  <p>Remember to find here the languages to use for prism syntax formatting <a href="https://prismjs.com/index.html#supported-languages">prism</a></p>
+</div>
 <footer class="text-center">
   <div class="container">
     <div class="row">
