@@ -149,7 +149,7 @@
     <li>Inside that directory create a file called <code>books.js</code>. This file will contain the route handling for your books.</li>
     <div>
       <pre>
-				<code>
+				<code class="language-js">
 					const express = require('express');
 					const router = express.Router();
 					BookSchema = require('../models/books');
@@ -195,7 +195,7 @@
   </ol>
   <li>Create a helper file to connect to database, name it <code>database.js</code>, place the file in the same directory as <code>index.js</code>. Note that at the moment our application is going to connect to a local MongoDB database, this will change once we are sure everything is in working order</li>
   <pre>
-		<code>
+		<code class="language-js">
 			const mongoose = require('mongoose');
 			const url = 'mongodb://localhost/books';
 
@@ -215,7 +215,7 @@
 		</pre>
   <li>Put all together on <code>index.js</code></li>
   <pre>
-		<code>
+		<code class="language-js">
 			const express = require('express');
 			const bodyParser = require('body-parser');
 
